@@ -1,6 +1,6 @@
 # Kubernetes Architecture Diagram
 
-(kubernetes-cluster-architecture.svg)
+![(kubernetes-cluster-architecture.svg)](kubernetes-cluster-architecture.svg)
 
 
 # Kubernetes Architecture Overview (End-to-End)
