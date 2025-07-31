@@ -26,7 +26,7 @@ Use a pod **only for learning or debugging purposes**. In real-world production:
 
 ---
 
-## ⚙️Pod Lifecycle (Simplified)
+## Pod Lifecycle (Simplified)
 
 - **Pending**: Pod is accepted but not yet running (e.g., waiting for a node)
 - **Running**: Pod is running on a node, containers are running
