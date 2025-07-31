@@ -4,7 +4,7 @@ This document explains the purpose and use of a **ReplicaSet** in Kubernetes usi
 
 ---
 
-## 🧠 What is a ReplicaSet?
+## What is a ReplicaSet?
 
 A **ReplicaSet** is a Kubernetes object that ensures a specified number of **identical Pods** are running at all times.
 
@@ -14,7 +14,7 @@ A **ReplicaSet** is a Kubernetes object that ensures a specified number of **ide
 
 ---
 
-## 📄 About `nginx-replicaset.yaml`
+## About `nginx-replicaset.yaml`
 
 This file defines a ReplicaSet that:
 
@@ -24,7 +24,7 @@ This file defines a ReplicaSet that:
 
 ---
 
-## 🚀 How to Use
+## How to Use
 
 | Action                                | Command                                          |
 | ------------------------------------- | ------------------------------------------------ |
