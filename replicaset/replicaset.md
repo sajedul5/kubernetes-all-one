@@ -1,4 +1,4 @@
-# 📘 Kubernetes ReplicaSet 
+# Kubernetes ReplicaSet 
 
 This document explains the purpose and use of a **ReplicaSet** in Kubernetes using the `nginx-replicaset.yaml` file. It is intended for learning and hands-on practice.
 
