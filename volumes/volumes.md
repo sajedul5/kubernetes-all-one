@@ -37,7 +37,7 @@ A `StorageClass` provides a way to describe different classes or "types" of stor
 
 ## The Storage Flow in Kubernetes
 
-```text
+
 Pod → PVC → (binds to) PV ← (created by) StorageClass
 
 
