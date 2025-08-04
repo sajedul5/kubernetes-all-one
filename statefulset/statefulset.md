@@ -38,7 +38,7 @@ A **StatefulSet** is a Kubernetes controller used to manage stateful application
 
     mongo-0.mongo.default.svc.cluster.local
 
----
+
 
 ## File Structure
 
@@ -47,17 +47,8 @@ A **StatefulSet** is a Kubernetes controller used to manage stateful application
 | `mongo-statefulset-basic.yaml` | Mongo StatefulSet (3 replicas) |
 | `mongo-headless-svc.yaml`     | Headless Service (required)    |
 
----
-# ---
 
-## File Structure
 
-| File                        | Purpose                        |
-|-----------------------------|---------------------------------|
-| `mongo-statefulset-basic.yaml` | Mongo StatefulSet (3 replicas) |
-| `mongo-headless-svc.yaml`     | Headless Service (required)    |
-
----
 
 #  Commands
 
