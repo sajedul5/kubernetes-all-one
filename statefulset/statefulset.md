@@ -1,4 +1,4 @@
-# Kubernetes StatefulSet Guide
+# Kubernetes StatefulSet
 
 ## What is a StatefulSet?
 
