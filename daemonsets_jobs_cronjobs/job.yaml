@@ -1,0 +1,18 @@
+# Job "pi": compute pi, 3 successful runs, 2 at a time.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pi
+spec:
+  completions: 3               # need 3 successful Pods
+  parallelism: 2               # run 2 at the same time
+  backoffLimit: 4              # retry max 4 times
+  activeDeadlineSeconds: 300   # whole Job must end in 5 minutes
+  ttlSecondsAfterFinished: 600 # auto-delete 10 min after finish
+  template:
+    spec:
+      restartPolicy: Never     # Job Pods: Never or OnFailure only
+      containers:
+        - name: pi
+          image: perl:5.40
+          command: ["perl", "-Mbignum=bpi", "-wle", "print bpi(500)"]

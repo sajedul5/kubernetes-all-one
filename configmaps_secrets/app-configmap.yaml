@@ -1,0 +1,11 @@
+# ConfigMap "app-config": NON-secret settings.
+# Used in configmaps_secrets/configmaps_secrets.md (hands-on lab).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  LOG_LEVEL: "debug"            # simple key/value (always strings)
+  APP_COLOR: "blue"
+  index.html: |                 # a whole file as one key
+    <h1>Hello from a ConfigMap</h1>

@@ -1,0 +1,20 @@
+# Overrides for a chart made with "helm create mychart" (important parts only).
+# Use with: helm install web mychart -f helm/mychart-values.yaml
+replicaCount: 3                # same as repo nginx-deployment
+image:
+  repository: nginx
+  tag: "1.27.2"                # PIN the tag (default uses appVersion)
+  pullPolicy: IfNotPresent
+service:
+  type: ClusterIP
+  port: 80                     # helm create ALSO uses this value as the
+                               # containerPort. nginx listens on 80, so
+                               # keep 80 here (or change the template)
+ingress:
+  enabled: false               # turn on later with --set
+resources:
+  requests:
+    cpu: 100m
+    memory: 64Mi
+  limits:
+    memory: 128Mi

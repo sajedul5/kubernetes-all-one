@@ -1,0 +1,21 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: node-reader            # no namespace: cluster-scoped
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]         # nodes are cluster-scoped
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: alice-node-reader
+subjects:
+- kind: User
+  name: alice                  # user name from certificate CN or OIDC
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: node-reader
+  apiGroup: rbac.authorization.k8s.io

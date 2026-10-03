@@ -1,0 +1,13 @@
+# k6 Operator TestRun (the k6 Operator must be installed first).
+# Uses the same "k6-script" ConfigMap as k6-pod.yaml.
+apiVersion: k6.io/v1alpha1
+kind: TestRun
+metadata:
+  name: nginx-load
+spec:
+  parallelism: 2                       # split load over 2 runner Pods
+  script:
+    configMap:
+      name: k6-script
+      file: k6-nginx-test.js
+  arguments: -e BASE_URL=http://nginx-service:8080

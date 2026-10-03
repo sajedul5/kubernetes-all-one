@@ -1,0 +1,12 @@
+# StorageClass "wait-storage": binds only when a Pod uses the PVC.
+# Used in volumes/volumes.md (hands-on lab, step 9).
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: wait-storage
+provisioner: k8s.io/minikube-hostpath
+volumeBindingMode: WaitForFirstConsumer   # PV created when Pod is placed
+reclaimPolicy: Retain                     # keep data after PVC delete
+allowVolumeExpansion: true                # allow bigger size later
+                                          # (only if the driver supports
+                                          # it; hostpath does not resize)

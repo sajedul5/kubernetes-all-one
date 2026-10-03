@@ -1,0 +1,30 @@
+# Deployment "nginx-deployment" for the HPA lab.
+# Based on deployments/nginx-deployments.yaml, but:
+#   - "replicas" is removed (the HPA owns the replica count)
+#   - CPU/memory requests are set (REQUIRED for the HPA)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  # replicas: 3              # removed: HPA owns the replica count
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx:1.27
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 50m       # REQUIRED: HPA % is based on this
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi

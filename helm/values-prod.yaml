@@ -1,0 +1,4 @@
+# Production overrides for mychart
+replicaCount: 5
+image:
+  tag: "1.27.3"

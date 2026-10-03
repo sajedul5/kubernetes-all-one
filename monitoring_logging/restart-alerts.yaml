@@ -1,0 +1,20 @@
+# PrometheusRule - alert if a container restarts often
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: restart-alerts
+  namespace: default
+  labels:
+    release: kps                 # so Prometheus loads this rule
+spec:
+  groups:
+  - name: pods
+    rules:
+    - alert: PodRestartingTooMuch
+      # more than 3 restarts in the last 15 minutes
+      expr: increase(kube_pod_container_status_restarts_total[15m]) > 3
+      for: 5m                    # must be true for 5 minutes
+      labels:
+        severity: warning
+      annotations:
+        summary: "Pod {{ $labels.pod }} restarts too much"

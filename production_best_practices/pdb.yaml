@@ -1,0 +1,10 @@
+# PodDisruptionBudget for nginx-prod (see nginx-prod.yaml)
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: nginx-prod-pdb
+spec:
+  minAvailable: 2                    # a drain may evict only 1 Pod
+  selector:                          # at a time out of 3
+    matchLabels:
+      app: nginx-prod

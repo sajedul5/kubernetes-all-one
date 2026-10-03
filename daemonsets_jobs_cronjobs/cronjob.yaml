@@ -1,0 +1,22 @@
+# CronJob "hello": runs every minute.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hello
+spec:
+  schedule: "*/1 * * * *"      # every minute
+  timeZone: "Etc/UTC"          # optional, IANA name
+  concurrencyPolicy: Forbid    # never two runs at the same time
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  startingDeadlineSeconds: 60
+  jobTemplate:                 # this is a Job spec
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: hello
+              image: busybox:1.36
+              command: ["sh", "-c", "date; echo Hello from CronJob"]

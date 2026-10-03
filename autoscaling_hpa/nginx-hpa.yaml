@@ -1,0 +1,39 @@
+# HorizontalPodAutoscaler "nginx-hpa" for Deployment "nginx-deployment".
+# Needs metrics-server: minikube addons enable metrics-server
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nginx-hpa
+spec:
+  scaleTargetRef:                 # WHAT to scale
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nginx-deployment
+  minReplicas: 1                  # never fewer than 1
+  maxReplicas: 10                 # never more than 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization       # percent of the REQUEST
+          averageUtilization: 50  # keep average CPU near 50%
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: AverageValue      # absolute value per Pod
+          averageValue: 100Mi
+  behavior:                       # optional tuning
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Percent
+          value: 100              # at most double the Pods ...
+          periodSeconds: 15       # ... every 15 seconds
+    scaleDown:
+      stabilizationWindowSeconds: 120   # wait 2 min before scale in
+      policies:
+        - type: Pods
+          value: 1                # remove max 1 Pod ...
+          periodSeconds: 60       # ... per minute

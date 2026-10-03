@@ -1,0 +1,15 @@
+# Helm values for kube-prometheus-stack on Minikube
+grafana:
+  adminPassword: "change-me-123"   # lab only! use a Secret in prod
+prometheus:
+  prometheusSpec:
+    retention: 2d                  # keep 2 days of data (small laptop)
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+alertmanager:
+  alertmanagerSpec:
+    resources:
+      requests:
+        memory: 64Mi

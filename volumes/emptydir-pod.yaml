@@ -1,0 +1,21 @@
+# Pod "shared": two containers share one emptyDir volume.
+# Used in volumes/volumes.md (hands-on lab, step 2).
+apiVersion: v1
+kind: Pod
+metadata:
+  name: shared
+spec:
+  containers:
+    - name: writer
+      image: busybox:1.36
+      command: ["sh", "-c", "while true; do date >> /data/log; sleep 2; done"]
+      volumeMounts:
+        - {name: tmp, mountPath: /data}
+    - name: reader
+      image: busybox:1.36
+      command: ["sh", "-c", "tail -f /data/log"]
+      volumeMounts:
+        - {name: tmp, mountPath: /data}
+  volumes:
+    - name: tmp
+      emptyDir: {}                 # lives as long as the Pod

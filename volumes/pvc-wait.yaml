@@ -1,0 +1,13 @@
+# PVC "wait-pvc" using the wait-storage class (stays Pending until a
+# Pod uses it). Apply volumes/sc-wait.yaml first.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wait-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: wait-storage

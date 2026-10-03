@@ -1,5 +1,9 @@
 # Quick Docker, Minikube & Kubernetes Setup - Ubuntu 24.04
 
+> **Shortcut:** run one script instead of the manual steps below:
+> `scripts/install-minikube-ubuntu.sh` (Ubuntu), `scripts/install-minikube-macos.sh` (macOS),
+> `scripts/install-minikube-windows.ps1` (Windows). See the main [README](../README.md).
+
 ## Prerequisites
 
     sudo apt update && sudo apt upgrade -y

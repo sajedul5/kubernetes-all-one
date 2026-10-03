@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    app: web
+  annotations:
+    kubernetes.io/change-cause: "initial release nginx 1.26"
+spec:
+  replicas: 4
+  revisionHistoryLimit: 5          # keep 5 old RS for rollback
+  minReadySeconds: 5               # Pod must stay Ready 5s to count
+  progressDeadlineSeconds: 120     # fail rollout after 2 min stuck
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1                  # max 5 Pods during update
+      maxUnavailable: 0            # never less than 4 ready Pods
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: web
+        image: nginx:1.26          # pinned; "latest" breaks rollback
+        ports:
+        - containerPort: 80
+        readinessProbe:            # only send traffic when ready
+          httpGet:
+            path: /
+            port: 80
+          periodSeconds: 5

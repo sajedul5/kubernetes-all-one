@@ -1,0 +1,16 @@
+# ServiceMonitor - scrape podinfo (installed in helm/helm.md) on its /metrics endpoint
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: podinfo
+  namespace: default
+  labels:
+    release: kps                 # MUST match the Helm release name
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: my-podinfo   # labels on the Service
+  endpoints:
+  - port: http                   # NAME of the Service port
+    path: /metrics               # where metrics are
+    interval: 15s                # scrape every 15 seconds

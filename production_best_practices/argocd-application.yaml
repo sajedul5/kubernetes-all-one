@@ -1,0 +1,22 @@
+# GitOps example - Argo CD Application (Argo CD must be installed).
+# Replace <you> in repoURL with your GitHub user before applying.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/<you>/kubernetes-all-one.git
+    targetRevision: main
+    path: deployments                # folder with YAML to sync
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: prod
+  syncPolicy:
+    automated:
+      prune: true                    # delete objects removed from Git
+      selfHeal: true                 # undo manual changes in cluster
+    syncOptions:
+    - CreateNamespace=true

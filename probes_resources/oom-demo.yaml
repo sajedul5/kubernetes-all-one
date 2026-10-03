@@ -1,0 +1,15 @@
+# Pod "oom-demo": tries to use 150M with a 50Mi limit -> OOMKilled.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: oom-demo
+spec:
+  restartPolicy: Never
+  containers:
+    - name: hog
+      image: polinux/stress:1.0.4    # small stress-test tool
+      command: ["stress"]
+      args: ["--vm", "1", "--vm-bytes", "150M", "--vm-hang", "1"]
+      resources:
+        limits:
+          memory: 50Mi               # it tries 150M -> killed

@@ -1,0 +1,37 @@
+# Pod "config-demo": reads app-config and mongo-creds in 3 ways
+# (single env var, envFrom, mounted file).
+# Apply app-configmap.yaml and app-secret.yaml first.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: config-demo
+spec:
+  containers:
+    - name: web
+      image: nginx:1.27
+      env:
+        - name: LOG_LEVEL               # 1) one key -> one env var
+          valueFrom:
+            configMapKeyRef:
+              name: app-config          # ConfigMap name
+              key: LOG_LEVEL            # key inside the ConfigMap
+        - name: DB_PASSWORD             # 1) same for a Secret
+          valueFrom:
+            secretKeyRef:
+              name: mongo-creds
+              key: password
+      envFrom:                          # 2) ALL keys as env vars
+        - secretRef:
+            name: mongo-creds           # gives env "username", "password"
+          prefix: MONGO_                # -> MONGO_username, MONGO_password
+      volumeMounts:
+        - name: html                    # 3) mount as files
+          mountPath: /usr/share/nginx/html
+          readOnly: true
+  volumes:
+    - name: html
+      configMap:
+        name: app-config
+        items:                          # only take these keys
+          - key: index.html
+            path: index.html            # file name inside mountPath

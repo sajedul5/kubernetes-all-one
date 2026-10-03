@@ -1,0 +1,33 @@
+# Ingress "demo": two apps, path routing, TLS.
+# Needs Services "api" and "web" and the TLS Secret "demo-tls"
+# (see ingress/ingress.md, hands-on lab steps 6-7).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"  # http -> https
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - demo.example.com         # must match a rule host
+      secretName: demo-tls         # kubernetes.io/tls Secret
+  rules:
+    - host: demo.example.com
+      http:
+        paths:
+          - path: /api             # /api, /api/users ... -> api
+            pathType: Prefix
+            backend:
+              service:
+                name: api
+                port:
+                  number: 80
+          - path: /                # everything else -> web
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 80

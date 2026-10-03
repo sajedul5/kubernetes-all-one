@@ -1,0 +1,90 @@
+# Production-style nginx: Deployment + Service (PDB is in pdb.yaml)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-prod
+  labels:
+    app: nginx-prod
+spec:
+  replicas: 3                        # survive the loss of one Pod
+  revisionHistoryLimit: 5            # keep 5 old ReplicaSets for undo
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0              # never go below 3 ready Pods
+      maxSurge: 1                    # add 1 new Pod at a time
+  selector:
+    matchLabels:
+      app: nginx-prod
+  template:
+    metadata:
+      labels:
+        app: nginx-prod
+    spec:
+      automountServiceAccountToken: false  # nginx never calls the API
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        seccompProfile:
+          type: RuntimeDefault
+      topologySpreadConstraints:
+      - maxSkew: 1                   # Pod count per node differs by <= 1
+        topologyKey: kubernetes.io/hostname   # spread over nodes
+        whenUnsatisfiable: ScheduleAnyway     # soft rule (DoNotSchedule
+                                              # = hard rule)
+        labelSelector:
+          matchLabels:
+            app: nginx-prod
+      # In the cloud also spread over zones:
+      #   topologyKey: topology.kubernetes.io/zone
+      containers:
+      - name: nginx
+        image: nginxinc/nginx-unprivileged:1.27.2-alpine  # pinned
+        ports:
+        - name: http
+          containerPort: 8080
+        resources:
+          requests:                  # used for scheduling and HPA
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            memory: 128Mi            # memory limit protects the node
+        readinessProbe:              # send traffic only when ready
+          httpGet:
+            path: /
+            port: http
+          periodSeconds: 5
+        livenessProbe:               # restart if it hangs
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        lifecycle:
+          preStop:                   # let the LB remove us first
+            sleep:
+              seconds: 5             # native sleep action (v1.30+)
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: tmp
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-prod
+spec:
+  selector:
+    app: nginx-prod
+  ports:
+  - port: 8080
+    targetPort: http                 # named port is safer

@@ -1,0 +1,81 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+  labels:
+    # Pod Security Admission: reject Pods that are not "restricted"
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: latest
+    # Also show a warning to the user for "restricted" problems
+    pod-security.kubernetes.io/warn: restricted
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: app-sa                 # identity for our app Pods
+  namespace: dev
+automountServiceAccountToken: false   # do not mount a token by default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role                     # namespaced rules
+metadata:
+  name: pod-reader
+  namespace: dev               # rules work only in "dev"
+rules:
+- apiGroups: [""]              # "" = core API group (pods live here)
+  resources: ["pods", "pods/log"]
+  verbs: ["get", "list", "watch"]   # read only. No create/delete.
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: app-sa-pod-reader
+  namespace: dev
+subjects:                      # WHO
+- kind: ServiceAccount
+  name: app-sa
+  namespace: dev
+roleRef:                       # WHAT (cannot be changed later)
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secure-nginx
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: secure-nginx
+  template:
+    metadata:
+      labels:
+        app: secure-nginx
+    spec:
+      serviceAccountName: app-sa        # use our ServiceAccount
+      securityContext:                  # Pod level
+        runAsNonRoot: true              # never run as root
+        runAsUser: 101                  # "nginx" user in this image
+        seccompProfile:
+          type: RuntimeDefault          # required by "restricted"
+      containers:
+      - name: nginx
+        # unprivileged nginx listens on 8080 (non-root cannot use 80)
+        image: nginxinc/nginx-unprivileged:1.27.2-alpine
+        ports:
+        - containerPort: 8080
+        securityContext:                # container level
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true  # cannot write to image files
+          capabilities:
+            drop: ["ALL"]               # remove all Linux capabilities
+        volumeMounts:
+        - name: tmp                     # nginx needs to write here
+          mountPath: /tmp
+      volumes:
+      - name: tmp
+        emptyDir: {}                    # writable scratch folder

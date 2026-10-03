@@ -16,6 +16,7 @@ spec:
         - image: mongo
           name: mongo
           args: ["--dbpath", "/data/db"]
+          # Demo only: never hardcode passwords. Use a Secret (see configmaps_secrets/configmaps_secrets.md)
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
               value: "admin"

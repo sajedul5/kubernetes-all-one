@@ -1,0 +1,10 @@
+# Values for the public "podinfo" chart (helm repo add podinfo https://stefanprodan.github.io/podinfo)
+replicaCount: 2                # run 2 Pods
+ui:
+  message: "Hello from Helm"   # text shown on the web page
+resources:
+  requests:
+    cpu: 50m                   # always set requests/limits
+    memory: 64Mi
+  limits:
+    memory: 128Mi

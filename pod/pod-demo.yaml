@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-with-helpers
+  labels:
+    app: web
+spec:
+  restartPolicy: Always              # default; restart if they stop
+  volumes:
+  - name: html                       # shared folder for all containers
+    emptyDir: {}                     # lives as long as the Pod lives
+  - name: logs
+    emptyDir: {}
+  initContainers:
+  - name: write-page                 # 1) runs first, must finish OK
+    image: busybox:1.36
+    command: ["sh", "-c", "echo '<h1>Hello init</h1>' > /work/index.html"]
+    volumeMounts:
+    - name: html
+      mountPath: /work
+  - name: log-shipper                # 2) native sidecar (K8s 1.29+)
+    image: busybox:1.36
+    restartPolicy: Always            # THIS makes it a sidecar
+    command: ["sh", "-c", "touch /logs/access.log; tail -F /logs/access.log"]
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+  containers:
+  - name: nginx                      # 3) main app
+    image: nginx:1.27                # pinned tag
+    ports:
+    - containerPort: 80
+    volumeMounts:
+    - name: html
+      mountPath: /usr/share/nginx/html   # serve the page from init
+    - name: logs
+      mountPath: /var/log/nginx          # nginx writes logs here

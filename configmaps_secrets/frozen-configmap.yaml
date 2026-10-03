@@ -1,0 +1,9 @@
+# Immutable ConfigMap "frozen": its data can never be edited.
+# To change it, delete and re-create it (or create a new versioned name).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frozen
+data:
+  A: "1"
+immutable: true

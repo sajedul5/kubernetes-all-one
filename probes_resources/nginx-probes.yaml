@@ -1,0 +1,46 @@
+# Deployment "nginx-deployment" like deployments/nginx-deployments.yaml,
+# but with probes and resources (requests/limits).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx:1.27            # pinned (repo uses nginx:latest)
+          ports:
+            - containerPort: 80
+          resources:
+            requests:                  # used for scheduling
+              cpu: 100m                # 0.1 core guaranteed
+              memory: 64Mi
+            limits:                    # hard maximum
+              cpu: 250m                # throttled above this
+              memory: 128Mi            # OOMKilled above this
+          startupProbe:                # runs first
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 5
+            failureThreshold: 12       # up to 60s to start
+          readinessProbe:              # controls traffic
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 5
+            failureThreshold: 2
+          livenessProbe:               # controls restarts
+            tcpSocket:
+              port: 80
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3        # 3 x 10s = 30s broken -> restart

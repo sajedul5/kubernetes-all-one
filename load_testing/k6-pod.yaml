@@ -1,0 +1,23 @@
+# Run the repo k6 test INSIDE the cluster (needed for HPA tests).
+# First create the script ConfigMap from the repo file:
+#   kubectl create configmap k6-script --from-file=load_testing/k6-nginx-test.js
+apiVersion: v1
+kind: Pod
+metadata:
+  name: k6-load
+spec:
+  restartPolicy: Never                 # run once, then stop
+  containers:
+  - name: k6
+    image: grafana/k6:1.1.0            # pinned k6 image
+    args: ["run", "/scripts/k6-nginx-test.js"]
+    env:
+    - name: BASE_URL                   # call the Service by DNS name
+      value: "http://nginx-service:8080"
+    volumeMounts:
+    - name: script
+      mountPath: /scripts              # the test file is here
+  volumes:
+  - name: script
+    configMap:
+      name: k6-script                  # created from the repo file
