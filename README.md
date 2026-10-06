@@ -147,3 +147,7 @@ Clean up everything: `minikube delete`
 
 Found a mistake or want to add a topic? Open an issue or PR. Keep new topics in the
 same format: `<topic>/<topic>.md` + YAML files, and add a row to the table above.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
